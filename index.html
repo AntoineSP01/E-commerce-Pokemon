@@ -1,12 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Pokemon</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Pokémon Shop</title>
 </head>
 <body>
+    <header>
+      <nav>
+        <div class="Logo_pokemon-container">
+          <img src="Image/Logo_pokemon.png" alt="Pokémon Shop Logo" class="Logo_pokemon">
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html">Accueil</a></li>
+        </ul>
+        <div class="Logo_panier-container">
+            <div id="cart-counter" class="cart-counter">0</div>
+          <img src="Image/Logo_panier.png" alt="Panier" class="Logo_panier">
+        </div>
+      </nav>
+    </header>
+
+    <h1 class="titrePrincipal">Bienvenue sur le Pokémon Shop</h1>
+
+    <h2 class="titreVedette">Nos pokémons en vedette, n'hésitez plus et capturez les avec votre pokécarte</h2>
+
+    <section id="random-pokemon"></section>
+
+    <h2 class="titrePokemon">Envie de voir nos autres Pokémon ? Voici la liste complète de tous nos Pokémon disponibles</h2>
+
+    <section id="pokemon-list" class="pokemon-list"></section>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
+// Ajouter un gestionnaire d'événements pour rediriger vers la page produit avec le prix
+  // pokemonCard.addEventListener('click', () => {
+  //   window.location.href = `produit.html?name=${pokemon.name}&price=${randomPrice}`;
+  // });

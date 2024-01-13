@@ -204,3 +204,68 @@ nav {
         }
   }
 
+.captured-pokemons {
+    padding-inline: 10%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 50px;
+
+    &-card {
+        background-color: #fff0db;
+        border-radius: 20px;
+        border: 1px solid #000;
+        box-shadow: 0px 0px 1px 0px black;
+        padding: 10px;
+        text-align: center;
+
+        .delete-icon {
+            display: flex;
+            justify-content: flex-end;
+            cursor: pointer;
+            color: #000; // Couleur de la croix, ici rouge
+            font-size: 18px;
+          }
+    }
+    
+    &-image {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    &-name {
+        font-weight: bold;
+    }
+    
+    &-price {
+        color: green;
+    }
+}
+
+.total-price {
+    background-color: #fff0db;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #000;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 50px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    color: green;
+  
+    @media screen and (max-width: 600px) {
+      font-size: 16px;
+      padding: 8px;
+    }
+  
+    @media screen and (max-width: 1024px) {
+      font-size: 18px;
+      padding: 10px;
+    }
+  
+}
+  
+  

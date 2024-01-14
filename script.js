@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pokemonCard.innerHTML = `
                 <img class="animationImage" src="${pokemon.image}" alt="${pokemon.name}">
                 <p class="pokemon-card-name">${pokemon.name}</p>
-                <p class="pokemon-card-price">Prix: ${formattedPrice}</p>
+                <p class="pokemon-card-price">Prix: ${formattedPrice} €</p>
                 <button class="pokemon-card-button">Capturer</button>
             `;
 
@@ -69,8 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction pour formater le prix avec séparation des milliers et suppression des décimales inutiles
     function formatPrice(price) {
-        return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 });
+        if (typeof price === 'string') {
+            const numericPrice = +price.replace(/\s/g, '');
+    
+            const formattedPrice = new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 0,
+                groupingSeparator: ' ',
+            }).format(numericPrice);
+    
+            return formattedPrice;
+        } else {
+            return price;
+        }
     }
+    
+    
 
     // Fonction pour récupérer et afficher tous les Pokémon depuis le PokeAPI en enlevant certains ids
     const excludedPokemonIds = [144, 145, 146, 150, 243, 244, 245, 249, 250, 377, 378, 379, 380, 381, 382, 383, 384, 480, 481, 482, 483, 484, 485, 486, 487, 488, 493, 638, 639, 640, 641, 642, 643, 644, 645, 646, 716, 717, 718, 772, 773, 785, 786, 787, 788, 789, 790, 791, 792, 800, 888, 889, 890, 891, 892, 894, 895, 896, 897, 898, 905, 1001, 1002, 1003, 1004, 1007, 1008]; 
@@ -113,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pokemonCard.innerHTML = `
             <img class="pokemon-list-image animationImage" src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
             <p class="pokemon-list-name">${pokemon.name}</p>
-            <p class="pokemon-list-price">Prix: ${formattedPrices}</p>
+            <p class="pokemon-list-price">Prix: ${formattedPrices} €</p>
             <button class="pokemon-list-button">Capturer</button>
         `;
 

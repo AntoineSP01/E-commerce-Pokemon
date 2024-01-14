@@ -10,29 +10,31 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getRandomPokemon(count) {
         const randomPokemon = [];
         const apiUrl = 'https://pokeapi.co/api/v2/pokemon/';
-
-        while (randomPokemon.length < count) {
-            const randomIndex = Math.floor(Math.random() * 50) + 1;
-            const url = `${apiUrl}${randomIndex}`;
-
+        const pokemonIds = [144, 145, 146, 150, 243, 244, 245, 249, 250, 377, 378, 379, 380, 381, 382, 383, 384, 480, 481, 482, 483, 484, 485, 486, 487, 488, 493, 638, 639, 640, 641, 642, 643, 644, 645, 646, 716, 717, 718, 772, 773, 785, 786, 787, 788, 789, 790, 791, 792, 800, 888, 889, 890, 891, 892, 894, 895, 896, 897, 898, 905, 1001, 1002, 1003, 1004, 1007, 1008];
+    
+        pokemonIds.sort(() => Math.random() - 0.5);
+    
+        const selectedIds = pokemonIds.slice(0, count);
+    
+        for (const pokemonId of selectedIds) {
+            const url = `${apiUrl}${pokemonId}`;
+    
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-
+    
                 const pokemonInfo = {
                     name: data.name,
                     image: data.sprites.front_default,
-                    price: Math.floor(Math.random() * 1000) + 1,
+                    price: Math.floor(Math.random() * 2001) + 1000,
                 };
-
-                if (!randomPokemon.some(p => p.name === pokemonInfo.name)) {
-                    randomPokemon.push(pokemonInfo);
-                }
+    
+                randomPokemon.push(pokemonInfo);
             } catch (error) {
                 console.error('Error fetching Pokémon data:', error);
             }
         }
-
+    
         return randomPokemon;
     }
 
@@ -47,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formattedPrice = formatPrice(pokemon.price);
 
             pokemonCard.innerHTML = `
-                <img src="${pokemon.image}" alt="${pokemon.name}">
+                <img class="animationImage" src="${pokemon.image}" alt="${pokemon.name}">
                 <p class="pokemon-card-name">${pokemon.name}</p>
                 <p class="pokemon-card-price">Prix: ${formattedPrice}</p>
                 <button class="pokemon-card-button">Capturer</button>
@@ -70,9 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 });
     }
 
-    // Fonction pour récupérer et afficher tous les Pokémon depuis le PokeAPI
+    // Fonction pour récupérer et afficher tous les Pokémon depuis le PokeAPI en enlevant certains ids
+    const excludedPokemonIds = [144, 145, 146, 150, 243, 244, 245, 249, 250, 377, 378, 379, 380, 381, 382, 383, 384, 480, 481, 482, 483, 484, 485, 486, 487, 488, 493, 638, 639, 640, 641, 642, 643, 644, 645, 646, 716, 717, 718, 772, 773, 785, 786, 787, 788, 789, 790, 791, 792, 800, 888, 889, 890, 891, 892, 894, 895, 896, 897, 898, 905, 1001, 1002, 1003, 1004, 1007, 1008]; 
+
     async function displayAllPokemon() {
-        const apiUrl = 'https://pokeapi.co/api/v2/pokemon?limit=50';
+        const apiUrl = 'https://pokeapi.co/api/v2/pokemon?limit=150';
 
         try {
             const response = await fetch(apiUrl);
@@ -81,7 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             pokemonList.forEach(async (pokemon) => {
                 const pokemonData = await getPokemonData(pokemon.url);
-                createPokemonCard(pokemonData);
+                
+                if (!excludedPokemonIds.includes(pokemonData.id)) {
+                    createPokemonCard(pokemonData);
+                }
             });
         } catch (error) {
             console.error('Error fetching Pokémon data:', error);
@@ -104,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formattedPrices = formatPrice(randomPrice);
 
         pokemonCard.innerHTML = `
-            <img class="pokemon-list-image" src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
+            <img class="pokemon-list-image animationImage" src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
             <p class="pokemon-list-name">${pokemon.name}</p>
             <p class="pokemon-list-price">Prix: ${formattedPrices}</p>
             <button class="pokemon-list-button">Capturer</button>
@@ -147,9 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cartCounterElement.textContent = captureCounter.toString();
     }
 
-    // Afficher trois Pokémon aléatoires sur la page d'accueil
     displayRandomPokemon(3);
 
-    // Afficher tous les Pokémon depuis le PokeAPI
     displayAllPokemon();
 });

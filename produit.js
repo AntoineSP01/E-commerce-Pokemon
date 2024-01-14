@@ -9,8 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const name = urlParams.get('name');
         let price = urlParams.get('price');
-        // Assure que le prix est une chaîne de caractères
-        price = String(price);
+        
+        price = parseFloat(price);
+        price = isNaN(price) ? 0 : price;
+    
         return { name, price };
     }
 
@@ -26,11 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 pokemonDetailsContainer.innerHTML = `
                     <h2 class="pokemonDetails-name">${name}</h2>
-                    <img class="pokemonDetails-image" src="${pokemonDetails.sprites.front_default}" alt="${name}">
+                    <img class="pokemonDetails-image move-animation" src="${pokemonDetails.sprites.front_default}" alt="${name}">
                     <p class="pokemonDetails-type">Type(s): ${getMultipleValues(pokemonDetails.types, 'type')}</p>
+                    <br>
                     <p class="pokemonDetails-stats">Statistiques: ${getStatsList(pokemonDetails.stats)}</p>
+                    <br>
                     <p class="pokemonDetails-abilities">Talent(s): ${getMultipleValues(pokemonDetails.abilities, 'ability')}</p>
-                    <p class="pokemonDetails-prix">Prix: ${price}</p>
+                    <br>
+                    <p class="pokemonDetails-prix">Prix: ${price} €</p>
+                    <br>
                     <button class="pokemonDetails-button">Capturer</button>
                 `;
 
@@ -38,6 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 captureButton.addEventListener('click', () => {
                     handleCaptureButtonClick({ name, price });
                 });
+
+                //Fonction pour animer l'image du Pokémon
+                const pokemonImage = pokemonDetailsContainer.querySelector('.pokemonDetails-image');
+
+                function animateImage() {
+                    pokemonImage.style.transition = 'transform 0.5s ease-in-out';
+                    pokemonImage.style.transform = 'translateY(-10px)'; 
+                }
+
+                function resetImagePosition() {
+                    pokemonImage.style.transition = 'transform 0.5s ease-in-out';
+                    pokemonImage.style.transform = 'translateY(0)';
+                }
+
+                pokemonImage.addEventListener('mouseenter', animateImage);
+                pokemonImage.addEventListener('mouseleave', resetImagePosition);
+
             } catch (error) {
                 console.error('Error fetching Pokémon details:', error);
             }
@@ -56,12 +79,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction pour obtenir une représentation en chaîne de caractères des statistiques du Pokémon
     function getStatsList(stats) {
-        return `<ul>${stats.map(stat => `<li>${stat.stat.name}: ${stat.base_stat}</li>`).join('')}</ul>`;
+        return `<ul>${stats.map(stat => `<li class="${getStatColorClass(stat.stat.name)}">${stat.stat.name}: ${stat.base_stat}</li>`).join('')}</ul>`;
     }
 
     // Fonction pour obtenir une représentation en chaîne de caractères des valeurs multiples
     function getMultipleValues(values, key) {
         return values.map(value => value[key].name).join(', ');
+    }
+
+    // Fonction pour obtenir la classe de couleur en fonction de la statistique
+    function getStatColorClass(statName) {
+        switch (statName) {
+            case 'attack':
+            case 'special-attack':
+                return 'red';
+            case 'defense':
+            case 'special-defense':
+                return 'brown';
+            case 'hp':
+                return 'green';
+            case 'speed':
+                return 'blue';
+            default:
+                return '';
+        }
     }
 
     // Fonction pour gérer le clic sur le bouton "Capturer"
@@ -72,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const capturedPokemon = {
             name: pokemon.name,
-            price: pokemon.price,
+            price: +pokemon.price,
         };
 
         const capturedPokemons = JSON.parse(localStorage.getItem('capturedPokemons')) || [];

@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const capturedPokemonsContainer = document.getElementById('captured-pokemons');
     let capturedPokemons = JSON.parse(localStorage.getItem('capturedPokemons')) || [];
+    const clearCartButton = document.getElementById('clear-cart-button');
 
     // Fonction pour récupérer les données détaillées d'un Pokémon
     async function getPokemonData(url) {
@@ -15,12 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour afficher les Pokémon capturés
     async function displayCapturedPokemons() {
         const totalPriceElement = document.getElementById('total-price');
-        capturedPokemonsContainer.innerHTML = ''; // Effacez le contenu actuel
+        capturedPokemonsContainer.innerHTML = '';
 
         for (const pokemon of capturedPokemons) {
             try {
-                const pokemonData = await getPokemonData(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
-                createPokemonCard(pokemon, pokemonData);
+                if (pokemon && pokemon.price !== undefined && pokemon.price !== null) {
+                    const pokemonPrice = parseFloat(pokemon.price) || 0;
+                    const pokemonData = await getPokemonData(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
+                    createPokemonCard(pokemon, pokemonData, pokemonPrice);
+                }
             } catch (error) {
                 console.error(error.message);
             }
@@ -28,8 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateTotalPrice();
 
-        // Fonction pour créer une carte Pokémon et l'ajouter à la liste
-        function createPokemonCard(pokemon, pokemonData) {
+        function createPokemonCard(pokemon, pokemonData, pokemonPrice) {
             const pokemonCard = document.createElement('div');
             pokemonCard.classList.add('captured-pokemons-card');
 
@@ -37,15 +40,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="delete-icon" onclick="removePokemon('${pokemon.name}')">&#10006;</span>
                 <img src="${pokemonData.sprites.front_default}" alt="${pokemon.name}">
                 <p class="captured-pokemons-name">${pokemon.name}</p>
-                <p class="captured-pokemons-price">Prix: ${formatPrice(pokemon.price)}</p>
+                <p class="captured-pokemons-price">Prix: ${formatPrice(pokemonPrice)}</p>
             `;
 
             capturedPokemonsContainer.appendChild(pokemonCard);
         }
 
-        // Fonction pour mettre à jour le prix total
         function updateTotalPrice() {
-            const totalPrice = capturedPokemons.reduce((total, pokemon) => total + pokemon.price, 0);
+            const totalPrice = capturedPokemons.reduce((total, pokemon) => {
+                if (pokemon && pokemon.price !== undefined && pokemon.price !== null) {
+                    const pokemonPrice = parseFloat(pokemon.price);
+                    return isNaN(pokemonPrice) ? total : total + pokemonPrice;
+                }
+                return total;
+            }, 0);
+
             totalPriceElement.textContent = `Total: ${formatPrice(totalPrice)}`;
         }
     }
@@ -73,6 +82,17 @@ document.addEventListener('DOMContentLoaded', () => {
             location.reload();
         }
     };
+
+    clearCartButton.addEventListener('click', () => {
+        localStorage.removeItem('capturedPokemons');
+        localStorage.removeItem('captureCounter');
+
+        capturedPokemons = [];
+
+        displayCapturedPokemons();
+
+        location.reload();
+    });
 
     // Affichez les Pokémon capturés lors du chargement de la page
     displayCapturedPokemons();
